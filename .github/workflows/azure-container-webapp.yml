@@ -13,21 +13,25 @@ permissions:
   packages: write
 
 jobs:
-  build:
+  build-and-deploy:
     runs-on: ubuntu-latest
-
+    environment:
+      name: 'Development'
+      url: ${{ steps.deploy-to-webapp.outputs.webapp-url }}
     steps:
       - uses: actions/checkout@v3
-      
       - name: create env file
         run: |
           touch .env
           echo DB_HOST=${{ secrets.DB_HOST }} >> .env
           echo DB_PASS=${{ secrets.DB_PASS }} >> .env
           echo JWT_SECRET=${{ secrets.JWT_SECRET }} >> .env
-      - name: Build image
-        run: docker compose -f docker-compose.yml build
-
+      - name: Build the Docker image
+        run: |
+          docker build . --file Dockerfile --tag fastapi_app
+      - name: Deploy Application
+        run: |
+          docker-compose -f ./compose.yml up -d 
       - name: Log in to GitHub container registry
         uses: docker/login-action@343f7c4344506bcbf9b4de18042ae17996df046d 
         with:
@@ -38,22 +42,13 @@ jobs:
       - name: Lowercase the repo name and username
         run: echo "REPO=${GITHUB_REPOSITORY,,}" >>${GITHUB_ENV}
  
-      - name: Log in to DO Container Registry
-        run: doctl registry login --expiry-seconds 600
+      - name: Build and push container image to registry
+        uses: docker/build-push-action@0565240e2d4ab88bba5387d719585280857ece09 # v5.0.0
+        with:
+          push: true
+          tags: ghcr.io/${{ env.REPO }}:${{ github.sha }}
+          compose-file: ./docker-compose.yml
 
-      - name: Push image to DO Container Registry
-        run: docker compose -f docker-compose.yml push
-
-  deploy:
-    permissions:
-      contents: none
-    runs-on: ubuntu-latest
-    needs: build
-    environment:
-      name: 'Development'
-      url: ${{ steps.deploy-to-webapp.outputs.webapp-url }}
-
-    steps:
       - name: Lowercase the repo name and username
         run: echo "REPO=${GITHUB_REPOSITORY,,}" >>${GITHUB_ENV}
 
@@ -64,3 +59,4 @@ jobs:
           app-name: wbpp9087610
           publish-profile: ${{ secrets.AZURE_WEBAPP_PUBLISH_PROFILE }}
           images: 'ghcr.io/${{ env.REPO }}:${{ github.sha }}'
+
