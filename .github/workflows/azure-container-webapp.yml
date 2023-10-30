@@ -1,4 +1,4 @@
-ame: Build and deploy a container to an Azure Web App
+name: Build and deploy a container to an Azure Web App
 
 env:
   AZURE_WEBAPP_NAME: wbpp9087610
