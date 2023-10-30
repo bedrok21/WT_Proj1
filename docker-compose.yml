@@ -12,7 +12,6 @@ services:
     env_file:
       - .env
     container_name: fastapi_app
-    command: ["/cinema_app/scripts/app.sh"]
     ports:
       - 8000:8000
     depends_on:
