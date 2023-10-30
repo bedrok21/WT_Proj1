@@ -1,0 +1,17 @@
+{% extends "shared/layout.html" %}
+
+{% block content %}
+    <h1>Movie Details</h1>
+    <div class="movie-details-container">
+        <div class="movie-image">
+            <img src="{{ movie.picture }}" alt="{{ movie.title }}">
+        </div>
+        <div class="movie-info">
+            <h2>{{ movie.title }}</h2>
+            <p><strong>Description:</strong> {{ movie.description }}</p>
+            <p><strong>Release Date:</strong> {{ movie.release_date }}</p>
+            <p><strong>Duration (minutes):</strong> {{ movie.duration }}</p>
+        </div>
+    </div>
+    <a href="/movie">Back to Movie List</a>
+{% endblock %}

@@ -1,0 +1,23 @@
+{% block content %}
+    <h1>Edit Theatre Details</h1>
+    <form method="post" action="/theatre/{{ theatre.id }}/edit">
+        <div class="form-group">
+            <label for="theatre_name">Name:</label>
+            <input type="text" id="theatre_name" name="theatre_name" value="{{ theatre.theatre_name }}" required>
+        </div>
+        <div class="form-group">
+            <label for="location">Location:</label>
+            <input type="text" id="location" name="location" value="{{ theatre.location }}" required>
+        </div>
+        <div class="form-group">
+            <label for="latitude">Latitude:</label>
+            <input type="number" id="latitude" name="latitude" value="{{ theatre.latitude }}" step="any" required>
+        </div>
+        <div class="form-group">
+            <label for="longtitude">Longtitude:</label>
+            <input type="number" id="longtitude" name="longtitude" value="{{ theatre.longtitude }}" step="any" required>
+        </div>
+        <button type="submit">Save Changes</button>
+    </form>
+    <a href="/theatre">Back to Theatre List</a>
+{% endblock %}

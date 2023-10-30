@@ -1,0 +1,19 @@
+version: "3.7"
+services:
+  redis:
+    image: redis:7
+    container_name: redis_app
+    command: --port 6379
+    expose:
+      - 6379
+  app:
+    build:
+      context: .
+    env_file:
+      - .env
+    container_name: fastapi_app
+    command: ["/cinema_app/scripts/app.sh"]
+    ports:
+      - 8000:8000
+    depends_on:
+      - redis

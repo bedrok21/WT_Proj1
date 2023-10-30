@@ -1,0 +1,30 @@
+{% extends "shared/layout.html" %}
+
+{% block content %}
+    <h1>Add a New Show</h1>
+    <form method="post" action="/test">
+        <div class="form-group">
+            <label for="title">Theatre:</label>
+            <input type="text" id="autocomplete-input" name="theatre_id">
+            <script>
+                $(function() {
+                  $("#autocomplete-input").autocomplete({
+                    source: function(request, response) {
+                      var data = ["Apple", "Banana", "Cherry", "Date", "Elderberry", "Fig", "Grape", "Honeydew"];
+                      var term = request.term.toLowerCase();
+                      var filteredData = data.filter(function(item) {
+                        return item.toLowerCase().includes(term);
+                      });
+                      response(filteredData);
+                    },
+                    minLength: 3,
+                    delay: 300
+                  });
+                });
+            </script>
+        </div>
+        <button type="submit">Add Movie</button>
+    </form>
+    <a href="/show">Back to Movie List</a>
+</div>
+{% endblock %}

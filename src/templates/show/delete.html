@@ -1,0 +1,10 @@
+{% extends "shared/layout.html" %}
+
+{% block content %}
+    <h1>Delete Show</h1>
+    <p>Are you sure you want to delete the show: {{ show.id }}?</p>
+    <form method="post" action="/show/{{ show.id }}/delete">
+        <button type="submit" class="delete-button">Delete</button>
+    </form>
+    <a href="/show">Cancel</a>
+{% endblock %}

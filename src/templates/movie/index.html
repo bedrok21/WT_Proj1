@@ -1,0 +1,44 @@
+{% extends "shared/layout.html" %}
+
+{% block content %}
+    <h1>List of Movies</h1>
+    <a href="/movie-create" class="add-button">Add Movie</a>
+    <form action="/movie/" method="get">
+        <label for="skip">Skip:</label>
+        <input type="number" id="skip" name="skip" min="0" value="{0}">
+        <label for="limit">Limit:</label>
+        <input type="number" id="limit" name="limit" min="1" value="{1}">
+        <input type="submit" value="Go">
+    </form>
+    <table class="table">
+        <thead>
+            <tr>
+                <th>Title</th>
+                <th>Description</th>
+                <th>Release Date</th>
+                <th>Duration (minutes)</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for movie in movies %}
+                <tr>
+                    <td>{{ movie.title }}</td>
+                    <td>{{ movie.description }}</td>
+                    <td>{{ movie.release_date }}</td>
+                    <td>{{ movie.duration }}</td>
+                    <td>
+                        <a href="/movie/{{ movie.id }}">Details</a> |
+                        <a href="/movie/{{ movie.id }}/edit">Edit</a> |
+                        <a href="/movie/{{ movie.id }}/delete">Delete</a>
+                    </td>
+                </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+    {%if not prev_link == '' %}
+        <a href={{prev_link}}>Prev Page</a>
+    {%endif%}
+    {%if not next_link == '' %}
+        <a href={{next_link}}>Next Page</a>
+    {%endif%}
+{% endblock %}

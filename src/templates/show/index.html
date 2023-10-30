@@ -1,0 +1,43 @@
+{% extends "shared/layout.html" %}
+
+{% block content %}
+    <h1>List of Shows</h1>
+    <a href="/show-create" class="add-button">Add Show</a>
+    <table class="table">
+        <thead>
+            <tr>
+                <th>Movie</th>
+                <th>Theatre</th>
+                <th>Date</th>
+                <th>Time</th>
+                <th>Format</th>
+                <th>Hall</th>
+                <th>Price</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for show in shows %}
+                <tr>
+                    <td>{{ show.movie_title }}</td>
+                    <td>{{ show.theatre_name }}</td>
+                    <td>{{ show.date }}</td>
+                    <td>{{ show.time }}</td>
+                    <td>{{ show.format }}</td>
+                    <td>{{ show.hall }}</td>
+                    <td>{{ show.price }}</td>
+                    <td>
+                        <a href="/show/{{ show.id }}">Details</a> |
+                        <a href="/show/{{ show.id }}/edit">Edit</a> |
+                        <a href="/show/{{ show.id }}/delete">Delete</a>
+                    </td>
+                </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+    {%if not prev_link == '' %}
+        <a href={{prev_link}}>Prev Page</a>
+    {%endif%}
+    {%if not next_link == '' %}
+        <a href={{next_link}}>Next Page</a>
+    {%endif%}
+{% endblock %}
