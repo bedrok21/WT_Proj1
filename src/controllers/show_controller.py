@@ -11,9 +11,32 @@ from .utils import get_page_link
 router = APIRouter(prefix="", include_in_schema=False)
 templates = Jinja2Templates(directory="src/templates/")
 
-@router.post("/test")
-async def test(theatre_id: str = Form(...)):
-    return {"data": theatre_id}
+@router.get("/search-theatre")
+async def test1(term: str, session: AsyncSession = Depends(get_async_session)):
+    theatres = await src.crud.get_theatres(session)
+    result = {}
+    for theatre in theatres:
+        if term.lower() in theatre["theatre_name"].lower():
+            result[theatre["id"]]=theatre["theatre_name"]
+    return result
+
+@router.get("/search-movie")
+async def test1(term: str, session: AsyncSession = Depends(get_async_session)):
+    movies = await src.crud.get_movies(session)
+    result = {}
+    for movie in movies:
+        if term.lower() in movie["title"].lower():
+            result[movie["id"]]=movie["title"]
+    return result
+
+@router.get("/search-format")
+async def test1(term: str, session: AsyncSession = Depends(get_async_session)):
+    formats = await src.crud.get_formats(session)
+    result = {}
+    for format in formats:
+        if term.lower() in format["format_name"].lower():
+            result[format["id"]]=format["format_name"]
+    return result
 
 @router.get("/show")
 async def get_shows(request: Request, session: AsyncSession = Depends(get_async_session),
@@ -31,16 +54,21 @@ async def get_shows(request: Request, session: AsyncSession = Depends(get_async_
     prev_link = ''
     if limit == len(shows):
         new_skip_next = skip + limit
-        next_link = get_page_link(new_skip_next, limit, 'movie')
+        next_link = get_page_link(new_skip_next, limit, 'show')
     if skip > 0:
         new_skip_prev = skip - limit
         if new_skip_prev < 0: new_skip_prev = 0
-        prev_link = get_page_link(new_skip_prev, limit, 'movie')
+        prev_link = get_page_link(new_skip_prev, limit, 'show')
     return templates.TemplateResponse("show/index.html", {"request": request, "shows": new_shows, "next_link":next_link, "prev_link":prev_link})
 
 @router.get("/show/{show_id}")
 async def show_details(show_id: int, request: Request, session: AsyncSession = Depends(get_async_session)):
-    return templates.TemplateResponse("show/details.html", {"request": request, "show": await src.crud.get_show_by_id(session, show_id)})
+    show = await src.crud.get_show_by_id(session, show_id)
+    show = dict(show)
+    show['movie_title'] = (await src.crud.get_movie_by_id(session, show['movie_id']))['title']
+    show['theatre_name'] = (await src.crud.get_theatre_by_id(session, show['theatre_id']))['theatre_name']
+    show['format'] = (await src.crud.get_format_by_id(session, show['format_id']))['format_name']
+    return templates.TemplateResponse("show/details.html", {"request": request, "show": show})
 
 
 @router.get("/show/{show_id}/delete")
@@ -56,6 +84,10 @@ async def show_delete_submit(show_id: int, session: AsyncSession = Depends(get_a
 @router.get("/show/{show_id}/edit")
 async def edit_show(request: Request, show_id: int, session: AsyncSession = Depends(get_async_session)):
     show = await src.crud.get_show_by_id(session, show_id)
+    show = dict(show)
+    show['movie_title'] = (await src.crud.get_movie_by_id(session, show['movie_id']))['title']
+    show['theatre_name'] = (await src.crud.get_theatre_by_id(session, show['theatre_id']))['theatre_name']
+    show['format'] = (await src.crud.get_format_by_id(session, show['format_id']))['format_name']
     if show is not None:
         return templates.TemplateResponse("show/edit.html", {"request": request, "show": show})
     else:
@@ -67,6 +99,11 @@ async def update_show(request: Request, show_id:int, theatre_id: int = Form(...)
                            price: float = Form(...), session: AsyncSession = Depends(get_async_session)):
     updated_show = Show_create(theatre_id=theatre_id,movie_id=movie_id,hall=hall,date=date,time=time,format_id=format_id,price=price)
     show = await src.crud.update_show_details(session, show_id, updated_show)
+    show = await src.crud.get_show_by_id(session, show_id)
+    show = dict(show)
+    show['movie_title'] = (await src.crud.get_movie_by_id(session, show['movie_id']))['title']
+    show['theatre_name'] = (await src.crud.get_theatre_by_id(session, show['theatre_id']))['theatre_name']
+    show['format'] = (await src.crud.get_format_by_id(session, show['format_id']))['format_name']
     if show is not None:
         return templates.TemplateResponse("show/edit.html", {"request": request, "show": show})
     else:
@@ -78,9 +115,10 @@ async def add_show(request: Request):
     return templates.TemplateResponse("show/create.html", {"request": request})
 
 @router.post("/show-create")
-async def submit_add_show(theatre_id: int = Form(...), movie_id: int = Form(...), hall_id: int = Form(...),
+async def submit_add_show(theatre_id: int = Form(...), movie_id: int = Form(...), hall: int = Form(...),
                            date: date = Form(...),time: time = Form(...),format_id: int = Form(...),
                            price: float = Form(...), session: AsyncSession = Depends(get_async_session)):
-    new_show = Show_create(theatre_id=theatre_id, movie_id=movie_id,hall_id=hall_id,date=date,time=time,format_id=format_id,price=price)
+    print(1)
+    new_show = Show_create(theatre_id=theatre_id, movie_id=movie_id,hall=hall,date=date,time=time,format_id=format_id,price=price)
     await src.crud.create_show(session, new_show)
     return RedirectResponse("/show", status_code=303)

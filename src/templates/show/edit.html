@@ -1,27 +1,107 @@
+{% extends "shared/layout.html" %}
+
 {% block content %}
-    <h1>Edit Movie Details</h1>
-    <form method="post" action="/movie/{{ movie.id }}/edit">
+    <h1>Edit Show Details</h1>
+    <form method="post" action="/show/{{ show.id }}/edit">
         <div class="form-group">
-            <label for="title">Title:</label>
-            <input type="text" id="title" name="title" value="{{ movie.title }}" required>
+            <label for="title">Create Show:</label>
+            <input type="text" id="theatre_id" name="theatre_id" style="display: none;" value="{{ show.theatre_id }}">
+            <input type="text" id="movie_id" name="movie_id" style="display: none;" value="{{ show.movie_id }}">
+            <input type="text" id="format_id" name="format_id" style="display: none;" value="{{ show.format_id }}">
+            <div class="form-group">
+              <label for="title">Theatre:</label>
+              <input type="text" class="autocomplete-input" name="theatre" value="{{ show.theatre_name }}">
+            </div>
+            <div class="form-group">
+              <label for="title">Movie:</label>
+              <input type="text" class="autocomplete-input" name="movie" value="{{ show.movie_title }}">
+            </div>
+            <div class="form-group">
+              <label for="title">Hall:</label>
+              <input type="number" name="hall" value="{{ show.hall }}">
+            </div>
+            <div class="form-group">
+              <label for="title">Date:</label>
+              <input type="date" name="date" value="{{ show.date }}">
+            </div>
+            <div class="form-group">
+              <label for="title">Time:</label>
+              <input type="time" name="time"  value="{{ show.time }}">
+            </div>
+            <div class="form-group">
+              <label for="title">Format:</label>
+              <input type="text" class="autocomplete-input" name="format" value="{{ show.format }}">
+            </div>
+            <div class="form-group">
+              <label for="title">Price:</label>
+              <input type="number" name="price" step="0.01"  value="{{ show.price }}">
+            </div>
+            <script>
+                var glob_dat = {}
+                $(document).ready(function () {
+                  $(".autocomplete-input").autocomplete({
+                    source: function(request, response) {
+                      var name = $(this.element).attr("name");
+                      console.log(name)
+                      $.ajax({
+                        url: '/search-' + name,
+                        method: 'GET',
+                        dataType: 'json',
+                        data: { term: request.term },
+                        success: function(data) {
+                          glob_dat = data;
+                          console.log(glob_dat);
+                          response(data);
+                        },
+                        error: function(err) {
+                          console.error('Error fetching data from the endpoint:', err);
+                        }
+                      });
+                    },
+                    select: function(event, ui) {
+                      var selectedValue = ui.item.value;
+                      var name = $(this).attr("name");
+
+                      var selectedKey;
+                      for (var key in glob_dat) {
+                        if (glob_dat[key] === selectedValue) {
+                          selectedKey = key;
+                          break;
+                        }
+                      }
+                      if (selectedKey) {
+                        $(this).val(selectedValue);
+                        $("#" + name + "_id").val(selectedKey);
+                      } else {
+                        $(this).val("");
+                        $("#" + name + "_id").val("");
+                      }
+                      return false;
+                    },
+                    change: function(event, ui) {
+                      if (!ui.item) {
+                        $(this).val("");
+                        var name = $(this).attr("name");
+                        $("#" + name + "_id").val("");
+                      }
+                    },
+                    minLength: 1,
+                    delay: 300
+                  });
+                });
+                $("form").submit(function(event) {
+                  var invalidInputs = $(".autocomplete-input").filter(function() {
+                    return !$(this).val();
+                  });
+                  if (invalidInputs.length > 0) {
+                    alert("Some input fields are empty, or valid selections must be made.");
+                    event.preventDefault();
+                  }
+                });
+            </script>
         </div>
-        <div class="form-group">
-            <label for="description">Description:</label>
-            <textarea id="description" name="description" required>{{ movie.description }}</textarea>
-        </div>
-        <div class="form-group">
-            <label for="release_date">Release Date:</label>
-            <input type="date" id="release_date" name="release_date" value="{{ movie.release_date }}" required>
-        </div>
-        <div class="form-group">
-            <label for="duration">Duration (minutes):</label>
-            <input type="number" id="duration" name="duration" value="{{ movie.duration }}" required>
-        </div>
-        <div class="form-group">
-            <label for="picture">Picture URL:</label>
-            <input type="url" id="picture" name="picture" value="{{ movie.picture }}" required>
-        </div>
-        <button type="submit">Save Changes</button>
+        <button type="submit">Edit Show</button>
     </form>
-    <a href="/movie">Back to Movie List</a>
+    <a href="/show">Back to Show List</a>
+</div>
 {% endblock %}

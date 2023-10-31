@@ -3,6 +3,13 @@
 {% block content %}
     <h1>List of Shows</h1>
     <a href="/show-create" class="add-button">Add Show</a>
+    <form action="/show/" method="get">
+        <label for="skip">Skip:</label>
+        <input type="number" id="skip" name="skip" min="0" value="0">
+        <label for="limit">Limit:</label>
+        <input type="number" id="limit" name="limit" min="1" value="1">
+        <input type="submit" value="Go">
+    </form>
     <table class="table">
         <thead>
             <tr>

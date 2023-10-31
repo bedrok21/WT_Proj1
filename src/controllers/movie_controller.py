@@ -31,7 +31,9 @@ async def get_movies(request: Request, session: AsyncSession = Depends(get_async
 
 @router.get("/movie/{movie_id}")
 async def movie_details(movie_id: int, request: Request, session: AsyncSession = Depends(get_async_session)):
-    return templates.TemplateResponse("movie/details.html", {"request": request, "movie": await src.crud.get_movie_by_id(session, movie_id)})
+    movie = await src.crud.get_movie_by_id(session, movie_id)
+    shows = await src.crud.get_shows_by_movie_id(session, movie_id)
+    return templates.TemplateResponse("movie/details.html", {"request": request, "shows":shows,  "movie": movie})
 
 
 @router.get("/movie/{movie_id}/delete")

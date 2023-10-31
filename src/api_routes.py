@@ -36,7 +36,7 @@ async def delete_movie(movie_id: int, session: AsyncSession = Depends(get_async_
 async def get_theatres(session: AsyncSession = Depends(get_async_session)):
     return await crud.get_theatres(session)
 
-@router.get("/theatre/{theatre_id}")
+@router.get("/theatre/{theatre_id}", response_model=schemas.Theatre)
 @cache(expire=60)
 async def get_theatre(theatre_id: int, session: AsyncSession = Depends(get_async_session)):
     return await crud.get_theatre_by_id(session, theatre_id)

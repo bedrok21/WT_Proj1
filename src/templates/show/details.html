@@ -4,14 +4,14 @@
     <h1>Show Details</h1>
     <div class="show-details-container">
         <div class="show-info">
-            <p><strong>Movie:</strong> {{ show.movie_id }}</p>
-            <p><strong>Theatre:</strong> {{ show.theatre_id }}</p>
+            <p><strong>Movie:</strong> {{ show.movie_title }}</p>
+            <p><strong>Theatre:</strong> {{ show.theatre_name }}</p>
             <p><strong>Date:</strong> {{ show.date }}</p>
             <p><strong>Time:</strong> {{ show.time }}</p>
-            <p><strong>Format:</strong> {{ show.format_id }}</p>
+            <p><strong>Format:</strong> {{ show.format }}</p>
             <p><strong>Hall:</strong> {{ show.hall }}</p>
             <p><strong>Price:</strong> {{ show.price }}</p>
         </div>
     </div>
-    <a href="/show">Back to Movie List</a>
+    <a href="/show">Back to Show List</a>
 {% endblock %}

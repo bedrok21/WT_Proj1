@@ -1,9 +1,10 @@
 from sqlalchemy import insert, select, update, delete
 from sqlalchemy.ext.asyncio import AsyncSession
+from fastapi import HTTPException
 from . import models, schemas
 
 
-async def get_movies(session: AsyncSession, limit:int, skip:int):
+async def get_movies(session: AsyncSession, limit:int=20, skip:int=0):
     result = await session.execute(select(models.movie).limit(limit).offset(skip))
     return [r._mapping for r in result.all()]
 
@@ -11,12 +12,12 @@ async def create_movie(session: AsyncSession, new_movie: schemas.Movie_create):
     await session.execute(insert(models.movie).values(**new_movie.model_dump()))
     return await session.commit()
 
-async def get_movie_by_id(session: AsyncSession, id: int):
-    result = await session.execute(select(models.movie).where(models.movie.c.id == id))
+async def get_movie_by_id(session: AsyncSession, movie_id: int):
+    result = await session.execute(select(models.movie).where(models.movie.c.id == movie_id))
     result = result.all()
     if len(result) > 0:
         return result[0]._mapping
-    return None
+    raise HTTPException(status_code=404, detail="Not Found")
 
 async def update_movie_details(session: AsyncSession, movie_id:int, updated_movie: schemas.Movie_create):
     await session.execute(update(models.movie).where(models.movie.c.id==movie_id).values(**updated_movie.model_dump()))
@@ -42,7 +43,7 @@ async def get_theatre_by_id(session: AsyncSession, id: int):
     result = result.all()
     if len(result) > 0:
         return result[0]._mapping
-    return None
+    raise HTTPException(status_code=404, detail="Not Found")
 
 async def update_theatre_details(session: AsyncSession, theatre_id:int, updated_theatre:schemas.Theatre_create):
     await session.execute(update(models.theatre).where(models.theatre.c.id==theatre_id).values(**updated_theatre.model_dump()))
@@ -55,7 +56,7 @@ async def delete_theatre(session: AsyncSession, theatre_id:int):
 
 ####################################################
 
-async def get_shows(session: AsyncSession, limit:int, skip:int):
+async def get_shows(session: AsyncSession, limit:int=10, skip:int=0):
     result = await session.execute(select(models.show).limit(limit).offset(skip))
     return [r._mapping for r in result.all()]
 
@@ -79,6 +80,9 @@ async def delete_show(session: AsyncSession, show_id:int):
     await session.execute(delete(models.show).where(models.show.c.id==show_id))
     await session.commit()
 
+async def get_shows_by_movie_id(session: AsyncSession, movie_id:int):
+    result = await session.execute(select(models.show).where(models.show.c.movie_id==movie_id).limit(5).offset(0))
+    return [r._mapping for r in result.all()]
 ####################################################
 
 async def get_formats(session: AsyncSession):

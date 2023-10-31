@@ -2,29 +2,106 @@
 
 {% block content %}
     <h1>Add a New Show</h1>
-    <form method="post" action="/test">
+    <form method="post" action="/show-create">
         <div class="form-group">
-            <label for="title">Theatre:</label>
-            <input type="text" id="autocomplete-input" name="theatre_id">
+            <label for="title">Create Show:</label>
+            <input type="text" id="theatre_id" name="theatre_id" style="display: none;">
+            <input type="text" id="movie_id" name="movie_id" style="display: none;">
+            <input type="text" id="format_id" name="format_id" style="display: none;">
+            <div class="form-group">
+              <label for="title">Theatre:</label>
+              <input type="text" class="autocomplete-input" name="theatre">
+            </div>
+            <div class="form-group">
+              <label for="title">Movie:</label>
+              <input type="text" class="autocomplete-input" name="movie">
+            </div>
+            <div class="form-group">
+              <label for="title">Hall:</label>
+              <input type="number" name="hall">
+            </div>
+            <div class="form-group">
+              <label for="title">Date:</label>
+              <input type="date" name="date">
+            </div>
+            <div class="form-group">
+              <label for="title">Time:</label>
+              <input type="time" name="time">
+            </div>
+            <div class="form-group">
+              <label for="title">Format:</label>
+              <input type="text" class="autocomplete-input" name="format">
+            </div>
+            <div class="form-group">
+              <label for="title">Price:</label>
+              <input type="number" name="price" step="0.01">
+            </div>
             <script>
-                $(function() {
-                  $("#autocomplete-input").autocomplete({
+                var glob_dat = {}
+                $(document).ready(function () {
+                  $(".autocomplete-input").autocomplete({
                     source: function(request, response) {
-                      var data = ["Apple", "Banana", "Cherry", "Date", "Elderberry", "Fig", "Grape", "Honeydew"];
-                      var term = request.term.toLowerCase();
-                      var filteredData = data.filter(function(item) {
-                        return item.toLowerCase().includes(term);
+                      var name = $(this.element).attr("name");
+                      console.log(name)
+                      $.ajax({
+                        url: '/search-' + name,
+                        method: 'GET',
+                        dataType: 'json',
+                        data: { term: request.term },
+                        success: function(data) {
+                          glob_dat = data;
+                          console.log(glob_dat);
+                          response(data);
+                        },
+                        error: function(err) {
+                          console.error('Error fetching data from the endpoint:', err);
+                        }
                       });
-                      response(filteredData);
                     },
-                    minLength: 3,
+                    select: function(event, ui) {
+                      var selectedValue = ui.item.value;
+                      var name = $(this).attr("name");
+
+                      var selectedKey;
+                      for (var key in glob_dat) {
+                        if (glob_dat[key] === selectedValue) {
+                          selectedKey = key;
+                          break;
+                        }
+                      }
+                      if (selectedKey) {
+                        $(this).val(selectedValue);
+                        $("#" + name + "_id").val(selectedKey);
+                      } else {
+                        $(this).val("");
+                        $("#" + name + "_id").val("");
+                      }
+                      return false;
+                    },
+                    change: function(event, ui) {
+                      if (!ui.item) {
+                        $(this).val("");
+                        var name = $(this).attr("name");
+                        $("#" + name + "_id").val("");
+                      }
+                    },
+                    minLength: 1,
                     delay: 300
                   });
                 });
+                $("form").submit(function(event) {
+                  var invalidInputs = $(".autocomplete-input").filter(function() {
+                    return !$(this).val();
+                  });
+                  if (invalidInputs.length > 0) {
+                    alert("Some input fields are empty, or valid selections must be made.");
+                    event.preventDefault();
+                  }
+                });
             </script>
         </div>
-        <button type="submit">Add Movie</button>
+        <button type="submit">Add Show</button>
     </form>
-    <a href="/show">Back to Movie List</a>
+    <a href="/show">Back to Show List</a>
 </div>
 {% endblock %}
