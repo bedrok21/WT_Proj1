@@ -7,13 +7,6 @@ class User(BaseModel):
     email: str
     password_hash: str
 
-class Movie(BaseModel):
-    id: int
-    title: str
-    description: str
-    release_date: date
-    duration: int
-    picture: str
 
 class Movie_create(BaseModel):
     title: str
@@ -22,28 +15,24 @@ class Movie_create(BaseModel):
     duration: int
     picture: str
 
-class Genre(BaseModel):
+class Movie(Movie_create):
     id: int
-    genre_name: str
+
 
 class Genre_create(BaseModel):
     genre_name: str
 
-class MovieGenre(BaseModel):
+class Genre(Genre_create):
     id: int
-    movie_id: int
-    genre_id: int
+
 
 class MovieGenre_create(BaseModel):
     movie_id: int
     genre_id: int
 
-class Theatre(BaseModel):
+class MovieGenre(MovieGenre_create):
     id: int
-    theatre_name: str
-    location: str
-    latitude: float
-    longtitude: float
+
 
 class Theatre_create(BaseModel):
     theatre_name: str
@@ -51,22 +40,16 @@ class Theatre_create(BaseModel):
     latitude: float
     longtitude: float
 
-class Format(BaseModel):
+class Theatre(Theatre_create):
     id: int
-    format_name: str
+
 
 class Format_create(BaseModel):
     format_name: str
 
-class Show(BaseModel):
+class Format(Format_create):
     id: int
-    theatre_id: int
-    movie_id: int
-    hall: int
-    date: date
-    time: time
-    format_id: int
-    price: float
+
 
 class Show_create(BaseModel):
     theatre_id: int
@@ -77,12 +60,16 @@ class Show_create(BaseModel):
     format_id: int
     price: float
 
-class Status(BaseModel):
+class Show(Show_create):
     id: int
-    status_name: str
+
 
 class Status_create(BaseModel):
     status_name: str
+
+class Status(Status_create):
+    id: int
+
 
 class Seat(BaseModel):
     id: int
@@ -97,10 +84,9 @@ class UserRead(BaseModel):
     email: str
     is_superuser: bool = False
 
-class UserLogin(BaseModel):
-    email: str
-    password: str
-
 class UserCreate(BaseModel):
     email: str
     password: str
+
+class UserLogin(UserCreate):
+    pass

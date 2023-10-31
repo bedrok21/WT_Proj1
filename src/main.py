@@ -11,11 +11,14 @@ from starlette.middleware.sessions import SessionMiddleware
 
 app = FastAPI()
 
+app.add_middleware(SessionMiddleware, secret_key="some-random-string")
 app.add_middleware(
-    SessionMiddleware,
-    secret_key = 'cwecec'
+    CORSMiddleware,
+    allow_origins=["*"],
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
 )
-
 
 app.include_router(api_router)
 
@@ -25,6 +28,7 @@ app.include_router(show_router)
 
 app.include_router(auth_router)
 app.include_router(auth_google_router)
+
 
 @app.on_event("startup")
 async def startup1():
