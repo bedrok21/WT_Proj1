@@ -4,8 +4,6 @@ env:
   AZURE_WEBAPP_NAME: wbpp9087610
 
 on:
-  push:
-    branches: [ "master" ]
   workflow_dispatch:
 
 permissions:
