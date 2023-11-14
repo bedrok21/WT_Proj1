@@ -76,7 +76,6 @@
                         $(this).val("");
                         $("#" + name + "_id").val("");
                       }
-                      return false;
                     },
                     change: function(event, ui) {
                       if (!ui.item) {
@@ -86,7 +85,7 @@
                       }
                     },
                     minLength: 1,
-                    delay: 300
+                    delay: 100
                   });
                 });
                 $("form").submit(function(event) {

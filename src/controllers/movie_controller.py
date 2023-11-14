@@ -12,7 +12,7 @@ from .utils import get_page_link
 router = APIRouter(prefix="", include_in_schema=False)
 templates = Jinja2Templates(directory="src/templates/")
 
-
+@router.get("/")
 @router.get("/movie")
 async def get_movies(request: Request, session: AsyncSession = Depends(get_async_session),
                      skip: int = Query(0, title="Skip"),

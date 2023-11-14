@@ -6,19 +6,13 @@ from redis import asyncio as aioredis
 
 from .api_routes import router as api_router
 from .controllers import movie_router, theatre_router, show_router
-from .auth.auth_routes import auth_router, auth_google_router
+from .auth.auth_routes import auth_google_router
 from starlette.middleware.sessions import SessionMiddleware
 
 app = FastAPI()
 
-app.add_middleware(SessionMiddleware, secret_key="some-random-string")
-app.add_middleware(
-    CORSMiddleware,
-    allow_origins=["*"],
-    allow_credentials=True,
-    allow_methods=["*"],
-    allow_headers=["*"],
-)
+app.add_middleware(SessionMiddleware, secret_key="bjwlkekvpomecwdwada")
+app.add_middleware(CORSMiddleware,allow_origins=["*"],allow_credentials=True,allow_methods=["*"],allow_headers=["*"])
 
 app.include_router(api_router)
 
@@ -26,7 +20,6 @@ app.include_router(movie_router)
 app.include_router(theatre_router)
 app.include_router(show_router)
 
-app.include_router(auth_router)
 app.include_router(auth_google_router)
 
 

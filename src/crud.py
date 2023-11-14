@@ -104,9 +104,17 @@ async def get_genres(session: AsyncSession):
     result = await session.execute(select(models.genre))
     return [r._mapping for r in result.all()]
 
+async def delete_genre(session: AsyncSession, genre_id:int):
+    await session.execute(delete(models.genre).where(models.show.c.id==genre_id))
+    await session.commit()
+
 async def get_movie_genres(session: AsyncSession):
     result = await session.execute(select(models.movie_genre))
     return [r._mapping for r in result.all()]
+
+async def delete_movie_genre(session: AsyncSession, movie_genre_id:int):
+    await session.execute(delete(models.movie_genre).where(models.show.c.id==movie_genre_id))
+    await session.commit()
 
 async def create_movie_genre(session: AsyncSession, new_movie_genre: schemas.MovieGenre_create):
     await session.execute(insert(models.movie_genre).values(**new_movie_genre.model_dump()))

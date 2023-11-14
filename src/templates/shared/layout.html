@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Web_Lab</title>
+    <title>MVC</title>
     <link rel="stylesheet" href="https://code.jquery.com/ui/1.12.1/themes/base/jquery-ui.css">
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
     <script src="https://code.jquery.com/ui/1.12.1/jquery-ui.js"></script>
@@ -26,6 +26,10 @@
             text-align: center;
             padding: 14px 16px;
             text-decoration: none;
+        }
+
+        ul.navbar li p {
+            color: white;
         }
 
         ul.navbar li a:hover {
@@ -187,6 +191,13 @@
                 <li><a href="/movie">Movies</a></li>
                 <li><a href="/theatre">Theatres</a></li>
                 <li><a href="/show">Shows</a></li>
+
+                {% if "token" in request.session %}
+                <li><p>{{ request.session["user_info"]["email"] }}</p></li>
+                <li><a href="/logout/google">Logout</a></li>
+                {% else %}
+                <li><a href="/login/google">Login</a></li>
+                {% endif %}
             </ul>
         </nav>
     </header>
